@@ -121,7 +121,7 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
         </div>
 
         <Suspense fallback={loading()}>
-          {/* <RightSideBar /> */}
+          <RightSideBar />
         </Suspense>
       </Suspense>
     </>
