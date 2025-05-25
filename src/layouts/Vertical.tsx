@@ -12,7 +12,6 @@ import { changeSideBarType } from "../redux/actions";
 import { Preloader } from "../components";
 
 // code splitting and lazy loading
-// https://blog.logrocket.com/lazy-loading-components-in-react-16-6-6cea535c0b52
 const Topbar = React.lazy(() => import("./Topbar"));
 const LeftSideBar = React.lazy(() => import("./LeftSideBar"));
 const Footer = React.lazy(() => import("./Footer"));
@@ -23,7 +22,6 @@ const loading = () => <div />;
 interface VerticalLayoutProps {
   children?: ReactNode;
 }
-
 
 const VerticalLayout = ({ children }: VerticalLayoutProps) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -53,36 +51,36 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
    */
 
   useEffect(() => {
-    changeHTMLAttribute('data-mode', layoutTheme)
-  }, [layoutTheme])
+    changeHTMLAttribute("data-mode", layoutTheme);
+  }, [layoutTheme]);
 
   useEffect(() => {
-    changeHTMLAttribute('dir', layoutDirection)
-  }, [layoutDirection])
+    changeHTMLAttribute("dir", layoutDirection);
+  }, [layoutDirection]);
 
   useEffect(() => {
-    changeHTMLAttribute('data-layout-width', layoutWidth)
-  }, [layoutWidth])
+    changeHTMLAttribute("data-layout-width", layoutWidth);
+  }, [layoutWidth]);
 
   useEffect(() => {
-    changeHTMLAttribute('data-topbar-color', topBarTheme)
-  }, [topBarTheme])
+    changeHTMLAttribute("data-topbar-color", topBarTheme);
+  }, [topBarTheme]);
 
   useEffect(() => {
-    changeHTMLAttribute('data-menu-color', sideBarTheme)
-  }, [sideBarTheme])
+    changeHTMLAttribute("data-menu-color", sideBarTheme);
+  }, [sideBarTheme]);
 
   useEffect(() => {
-    changeHTMLAttribute('data-sidenav-view', sideBarType)
-  }, [sideBarType])
+    changeHTMLAttribute("data-sidenav-view", sideBarType);
+  }, [sideBarType]);
 
   useEffect(() => {
-    changeHTMLAttribute('data-layout-position', layoutPosition)
-  }, [layoutPosition])
+    changeHTMLAttribute("data-layout-position", layoutPosition);
+  }, [layoutPosition]);
 
   useEffect(() => {
-    document.getElementsByTagName('html')[0].removeAttribute('data-layout')
-  }, [])
+    document.getElementsByTagName("html")[0].removeAttribute("data-layout");
+  }, []);
 
   useEffect(() => {
     if (width <= 1140) {
@@ -90,7 +88,7 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
     } else if (width > 1140) {
       dispatch(changeSideBarType(layoutConstants.SideBarType.LEFT_SIDEBAR_TYPE_DEFAULT));
     }
-  }, [width, dispatch])
+  }, [width, dispatch]);
 
   const isCondensed = sideBarType === layoutConstants.SideBarType.LEFT_SIDEBAR_TYPE_SMALL;
   const isLight = sideBarTheme === layoutConstants.SideBarTheme.LEFT_SIDEBAR_THEME_LIGHT;
@@ -98,21 +96,24 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
   return (
     <>
       <Suspense fallback={loading()}>
-        <div className="flex wrapper">
+        <div
+          className="flex wrapper"
+          style={{
+            background: "linear-gradient(180deg, #F5E6FF 0%, #E0C3FF 100%)",
+            minHeight: "100vh", // Ensure it covers the full viewport height
+          }}
+        >
           <Suspense fallback={loading()}>
             <LeftSideBar isCondensed={isCondensed} isLight={isLight} />
           </Suspense>
 
           <div className="page-content">
-
             <Suspense fallback={loading()}>
               <Topbar />
             </Suspense>
 
             <main className="flex-grow p-6">
-              <Suspense fallback={<Preloader />}>
-                {children}
-              </Suspense>
+              <Suspense fallback={<Preloader />}>{children}</Suspense>
             </main>
 
             <Footer />
@@ -120,7 +121,7 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
         </div>
 
         <Suspense fallback={loading()}>
-          <RightSideBar />
+          {/* <RightSideBar /> */}
         </Suspense>
       </Suspense>
     </>

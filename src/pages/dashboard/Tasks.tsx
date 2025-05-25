@@ -14,7 +14,7 @@ import avatar8 from '../../assets/images/users/avatar-8.jpg'
 const Tasks = () => {
   return (
     <>
-      <div className="grid xl:grid-cols-4 md:grid-cols-2 gap-6 mb-6">
+      <div className="grid xl:grid-cols-3 md:grid-cols-2 gap-6 mb-6">
         <TaskWidget
           avatar1={avatar1}
           avatar2={avatar2}
@@ -28,12 +28,12 @@ const Tasks = () => {
           title="Admin Template"
           time="3 Hrs ago"
         />
-        <TaskWidget
+        {/* <TaskWidget
           avatar1={avatar5}
           avatar2={avatar6}
           title="Client Project"
           time="5 Hrs ago"
-        />
+        /> */}
         <TaskWidget
           avatar1={avatar7}
           avatar2={avatar8}
