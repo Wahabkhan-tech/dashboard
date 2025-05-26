@@ -32,7 +32,6 @@ interface LeftSideBarProps {
 }
 
 const HoverMenuToggler = () => {
-
   const { sideBarType } = useSelector((state: RootState) => ({
     sideBarType: state.Layout.sideBarType,
   }));
@@ -60,20 +59,18 @@ const HoverMenuToggler = () => {
   )
 }
 
-
 const LeftSideBar = ({ isCondensed, hideLogo }: LeftSideBarProps) => {
-
   return (
     <React.Fragment>
       <div className="app-menu">
         <Link to="/" className="logo-box">
           <div className="logo-light">
-            <img src={logoLight} className="logo-lg h-6" alt="Light logo" />
-            <img src={logoSm} className="logo-sm" alt="Small logo" />
+            <img src={logoLight} className="logo-lg" style={{ height: "100px" }} alt="Light logo" />
+            <img src={logoSm} className="logo-sm" style={{ height: "60px" }} alt="Small logo" />
           </div>
           <div className="logo-dark">
-            <img src={logoDark} className="logo-lg h-6" alt="Dark logo" />
-            <img src={logoSm} className="logo-sm" alt="Small logo" />
+            <img src={logoDark} className="logo-lg" style={{ height: "100px" }} alt="Dark logo" />
+            <img src={logoSm} className="logo-sm" style={{ height: "60px" }} alt="Small logo" />
           </div>
         </Link>
 
@@ -86,7 +83,7 @@ const LeftSideBar = ({ isCondensed, hideLogo }: LeftSideBarProps) => {
           <SideBarContent />
 
           <div className="my-10 mx-5">
-           
+            {/* Optional content can go here */}
           </div>
         </SimpleBar>
       </div>
