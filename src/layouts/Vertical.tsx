@@ -49,7 +49,6 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
   /**
    * Layout defaults
    */
-
   useEffect(() => {
     changeHTMLAttribute("data-mode", layoutTheme);
   }, [layoutTheme]);
@@ -99,8 +98,11 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
         <div
           className="flex wrapper"
           style={{
-            background: "linear-gradient(180deg, #F5E6FF 0%, #E0C3FF 100%)",
-            minHeight: "100vh", // Ensure it covers the full viewport height
+            background:
+              layoutTheme === layoutConstants.LayoutTheme.THEME_LIGHT
+                ? "linear-gradient(180deg, #F5E6FF 0%, #E0C3FF 100%)"
+                : undefined,
+            minHeight: "100vh",
           }}
         >
           <Suspense fallback={loading()}>
