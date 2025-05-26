@@ -1,15 +1,17 @@
-// components
-import { PageBreadcrumb } from "../../components"
-import Tasks from "./Tasks"
-import ProjectChart from "./ProjectChart"
-import ProjectSummary from "./ProjectSummary"
-import ProjectStates from "./ProjectStates"
-import ProjectOverview from "./ProjectOverview"
+import { PageBreadcrumb } from "../../components";
+import Tasks from "./Tasks";
+import ProjectChart from "./ProjectChart";
+import ProjectSummary from "./ProjectSummary";
+import QuickActions from "./QuickActions";
+import AIInsights from "./AIInsights";
+import BillingSummary from "./BillingSummary";
+import SupportTickets from "./SupportTickets";
+import RecentActivity from "./RecentActivity";
 
 const Dashboard = () => {
   return (
     <>
-      <PageBreadcrumb title='Dashboard' name='Dashboard' breadCrumbItems={['Konrix', 'Menu', 'Dashboard']} />
+      <PageBreadcrumb title="Dashboard" name="Dashboard" breadCrumbItems={["Konrix", "Menu", "Dashboard"]} />
 
       <div className="grid 2xl:grid-cols-4 gap-6 mb-6">
         <div className="2xl:col-span-3">
@@ -18,12 +20,19 @@ const Dashboard = () => {
         </div>
         <ProjectSummary />
       </div>
-      <ProjectStates />
-      <div className="grid 2xl:grid-cols-4 md:grid-cols-2 gap-6">
-        <ProjectOverview />
+
+      <div className="grid grid-cols-3 gap-6 mb-6">
+        <QuickActions />
+        <AIInsights />
+        <BillingSummary />
+      </div>
+
+      <div className="grid grid-cols- gap-6 mb-6">
+        <SupportTickets />
+        <RecentActivity />
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

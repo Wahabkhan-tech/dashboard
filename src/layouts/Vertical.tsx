@@ -100,7 +100,7 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
           style={{
             background:
               layoutTheme === layoutConstants.LayoutTheme.THEME_LIGHT
-                ? "linear-gradient(180deg, #F5E6FF 0%, #E0C3FF 100%)"
+                ? "linear-gradient(470deg, #F8F8F8 0%, #ECD0FD 100%)"
                 : undefined,
             minHeight: "100vh",
           }}

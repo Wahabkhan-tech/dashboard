@@ -1,48 +1,78 @@
-// components
-import { TaskWidget } from "./components"
-
-// images
-import avatar1 from '../../assets/images/users/avatar-1.jpg'
-import avatar2 from '../../assets/images/users/avatar-2.jpg'
-import avatar3 from '../../assets/images/users/avatar-3.jpg'
-import avatar4 from '../../assets/images/users/avatar-4.jpg'
-import avatar5 from '../../assets/images/users/avatar-5.jpg'
-import avatar6 from '../../assets/images/users/avatar-6.jpg'
-import avatar7 from '../../assets/images/users/avatar-7.jpg'
-import avatar8 from '../../assets/images/users/avatar-8.jpg'
-
 const Tasks = () => {
   return (
     <>
-      <div className="grid xl:grid-cols-3 md:grid-cols-2 gap-6 mb-6">
-        <TaskWidget
-          avatar1={avatar1}
-          avatar2={avatar2}
-          title="Project Dashboard"
-          time="4 Hrs ago"
-        />
-
-        <TaskWidget
-          avatar1={avatar3}
-          avatar2={avatar4}
-          title="Admin Template"
-          time="3 Hrs ago"
-        />
-        {/* <TaskWidget
-          avatar1={avatar5}
-          avatar2={avatar6}
-          title="Client Project"
-          time="5 Hrs ago"
-        /> */}
-        <TaskWidget
-          avatar1={avatar7}
-          avatar2={avatar8}
-          title="Figma Design"
-          time="1 Day ago"
-        />
+      <div className="mb-6 flex justify-center w-full">
+        <div className="flex-1 bg-white rounded-full px-4 py-2 mr-2">
+          <div className="flex justify-between items-center">
+            <label className="text-sm text-gray-600 whitespace-nowrap">Timeframe:</label>
+            <select className="form-select form-select-sm bg-transparent border-0 text-gray-700 focus:ring-0">
+              <option defaultChecked>All-time</option>
+              <option value="1">Last 30 Days</option>
+              <option value="2">This Month</option>
+            </select>
+          </div>
+        </div>
+        <div className="flex-1 bg-white rounded-full px-4 py-2 mr-2">
+          <div className="flex justify-between items-center">
+            <label className="text-sm text-gray-600 whitespace-nowrap">Report Type:</label>
+            <select className="form-select form-select-sm bg-transparent border-0 text-gray-700 focus:ring-0">
+              <option defaultChecked>All</option>
+              <option value="1">Summary</option>
+              <option value="2">Detailed</option>
+            </select>
+          </div>
+        </div>
+        <div className="flex-1 bg-white rounded-full px-4 py-2">
+          <div className="flex justify-between items-center">
+            <label className="text-sm text-gray-600 whitespace-nowrap">File Type:</label>
+            <select className="form-select form-select-sm bg-transparent border-0 text-gray-700 focus:ring-0">
+              <option defaultChecked>All</option>
+              <option value="1">PDF</option>
+              <option value="2">CSV</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-6 mb-6">
+        <div className="card p-4 bg-white rounded-lg shadow-sm">
+          <div className="flex items-center">
+            <div className="w-12 h-12 flex justify-center items-center rounded-full bg-blue-100 text-blue-600 mr-4">
+              <i className="fas fa-upload text-xl"></i>
+            </div>
+            <div>
+              <h4 className="text-xl font-bold">86</h4>
+              <p className="text-gray-600">File Uploaded (last 30 days)</p>
+              <p className="text-green-600">+10% this month</p>
+            </div>
+          </div>
+        </div>
+        <div className="card p-4 bg-white rounded-lg shadow-sm">
+          <div className="flex items-center">
+            <div className="w-12 h-12 flex justify-center items-center rounded-full bg-red-100 text-red-600 mr-4">
+              <i className="fas fa-file-alt text-xl"></i>
+            </div>
+            <div>
+              <h4 className="text-xl font-bold">48</h4>
+              <p className="text-gray-600">Reports Generated (last 30 days)</p>
+              <p className="text-green-600">14 new this month</p>
+            </div>
+          </div>
+        </div>
+        <div className="card p-4 bg-white rounded-lg shadow-sm">
+          <div className="flex items-center">
+            <div className="w-12 h-12 flex justify-center items-center rounded-full bg-gray-100 text-gray-600 mr-4">
+              <i className="fas fa-info-circle text-xl"></i>
+            </div>
+            <div>
+              <h4 className="text-xl font-bold">23</h4>
+              <p className="text-gray-600">Pending Verifications</p>
+              <p className="text-green-600">+20 this month</p>
+            </div>
+          </div>
+        </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Tasks
+export default Tasks;
