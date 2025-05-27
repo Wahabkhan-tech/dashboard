@@ -1,3 +1,5 @@
+import { Upload, FileText, Info } from 'feather-icons-react';
+
 const Tasks = () => {
   return (
     <>
@@ -36,8 +38,8 @@ const Tasks = () => {
       <div className="grid grid-cols-3 gap-6 mb-6">
         <div className="card p-4 bg-white rounded-lg shadow-sm">
           <div className="flex items-center">
-            <div className="w-12 h-12 flex justify-center items-center rounded-full bg-blue-100 text-blue-600 mr-4">
-              <i className="fas fa-upload text-xl"></i>
+            <div className="w-12 h-12 flex justify-center items-center rounded-full mr-4">
+              <Upload className="text-xl" />
             </div>
             <div>
               <h4 className="text-xl font-bold">86</h4>
@@ -48,8 +50,8 @@ const Tasks = () => {
         </div>
         <div className="card p-4 bg-white rounded-lg shadow-sm">
           <div className="flex items-center">
-            <div className="w-12 h-12 flex justify-center items-center rounded-full bg-red-100 text-red-600 mr-4">
-              <i className="fas fa-file-alt text-xl"></i>
+            <div className="w-12 h-12 flex justify-center items-center rounded-full mr-4">
+              <FileText className="text-xl" />
             </div>
             <div>
               <h4 className="text-xl font-bold">48</h4>
@@ -60,8 +62,8 @@ const Tasks = () => {
         </div>
         <div className="card p-4 bg-white rounded-lg shadow-sm">
           <div className="flex items-center">
-            <div className="w-12 h-12 flex justify-center items-center rounded-full bg-gray-100 text-gray-600 mr-4">
-              <i className="fas fa-info-circle text-xl"></i>
+            <div className="w-12 h-12 flex justify-center items-center rounded-full mr-4">
+              <Info className="text-xl" />
             </div>
             <div>
               <h4 className="text-xl font-bold">23</h4>

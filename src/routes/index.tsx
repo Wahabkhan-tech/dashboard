@@ -14,10 +14,10 @@ const Register = React.lazy(() => import("../pages/auth/Register"));
 const RecoverPassword = React.lazy(() => import("../pages/auth/RecoverPassword"));
 const LockScreen = React.lazy(() => import("../pages/auth/LockScreen"));
 
-// dashboard 
+// dashboard
 const Dashboard = React.lazy(() => import("../pages/dashboard/"));
 
-// apps 
+// apps
 const CalendarApp = React.lazy(() => import('../pages/apps/Calendar'));
 const FileManagerApp = React.lazy(() => import('../pages/apps/FileManager'));
 const KanbanApp = React.lazy(() => import('../pages/apps/Kanban'));
@@ -25,7 +25,7 @@ const ProjectCreate = React.lazy(() => import('../pages/apps/Project/Create'));
 const ProjectDetail = React.lazy(() => import('../pages/apps/Project/Detail'));
 const ProjectList = React.lazy(() => import('../pages/apps/Project/List'));
 
-// extra pages 
+// extra pages
 const Starter = React.lazy(() => import('../pages/extra/Starter'));
 const Timeline = React.lazy(() => import('../pages/extra/TimeLine'));
 const Invoice = React.lazy(() => import('../pages/extra/Invoice'));
@@ -102,11 +102,16 @@ const Chart = React.lazy(() => import('../pages/ui/Chart'));
 const VectorMaps = React.lazy(() => import('../pages/ui/maps/VectorMaps'));
 const GoogleMaps = React.lazy(() => import('../pages/ui/maps/GoogleMaps'));
 
+// New Uploads page
+const Uploads = React.lazy(() => import("../pages/UploadFilesPage/UploadFilesPage"));
+
+// New Billings page
+const Billings = React.lazy(() => import("../pages/Billing/Billings"));
+
 export interface RoutesProps {
   path: RouteProps["path"];
   name?: string;
   element?: RouteProps["element"];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   route?: any;
   exact?: boolean;
   icon?: string;
@@ -206,7 +211,27 @@ const projectAppRoutes: RoutesProps = {
   ]
 };
 
-const appRoutes = [calendarAppRoutes, ticketsAppRoutes, projectAppRoutes, kanbanAppRoutes, fileAppRoutes];
+// Existing Uploads route
+const uploadsRoute: RoutesProps = {
+  path: "/uploads",
+  name: "Upload Files",
+  element: <Uploads />,
+  route: PrivateRoute,
+  icon: "mgc_upload_2_line",
+  header: "Apps",
+};
+
+// New Billings route
+const billingsRoute: RoutesProps = {
+  path: "/billings",
+  name: "Billings",
+  element: <Billings />,
+  route: PrivateRoute,
+  icon: "mgc_credit_card_line",
+  header: "Apps",
+};
+
+const appRoutes = [calendarAppRoutes, ticketsAppRoutes, projectAppRoutes, kanbanAppRoutes, fileAppRoutes, uploadsRoute, billingsRoute];
 
 // pages
 const customPagesRoutes = {
@@ -611,7 +636,7 @@ const authRoutes: RoutesProps[] = [
     route: Route,
   },
   {
-    path: "/auth/register",
+    path: "/auth	device: Register",
     name: "Register",
     element: <Register />,
     route: Route,

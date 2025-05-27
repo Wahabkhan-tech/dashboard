@@ -1,7 +1,7 @@
 import { PageBreadcrumb } from "../../components";
 import Tasks from "./Tasks";
 import ProjectChart from "./ProjectChart";
-import ProjectSummary from "./ProjectSummary";
+// import ProjectSummary from "./ProjectSummary";
 import QuickActions from "./QuickActions";
 import AIInsights from "./AIInsights";
 import BillingSummary from "./BillingSummary";
@@ -11,14 +11,14 @@ import RecentActivity from "./RecentActivity";
 const Dashboard = () => {
   return (
     <>
-      <PageBreadcrumb title="Dashboard" name="Dashboard" breadCrumbItems={["Konrix", "Menu", "Dashboard"]} />
+      <PageBreadcrumb title="Dashboard" name="Dashboard" breadCrumbItems={["Emirates", "Menu", "Dashboard"]} />
 
       <div className="grid 2xl:grid-cols-4 gap-6 mb-6">
         <div className="2xl:col-span-3">
           <Tasks />
           <ProjectChart />
         </div>
-        <ProjectSummary />
+        {/* <ProjectSummary /> */}
       </div>
 
       <div className="grid grid-cols-3 gap-6 mb-6">
