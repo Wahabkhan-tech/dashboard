@@ -17,6 +17,9 @@ const LeftSideBar = React.lazy(() => import("./LeftSideBar"));
 const Footer = React.lazy(() => import("./Footer"));
 const RightSideBar = React.lazy(() => import("./RightSideBar"));
 
+// Import Chatbot
+import Chatbot from "./Chatbot";
+
 const loading = () => <div />;
 
 interface VerticalLayoutProps {
@@ -125,6 +128,9 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
         <Suspense fallback={loading()}>
           <RightSideBar />
         </Suspense>
+
+        {/* Add Chatbot */}
+        <Chatbot />
       </Suspense>
     </>
   );

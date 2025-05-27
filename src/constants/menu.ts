@@ -97,6 +97,13 @@ const MENU_ITEMS: MenuItemTypes[] = [
     url: '/billings',
   },
   {
+    key: 'apps-reports',
+    label: 'Reports',
+    isTitle: false,
+    icon: 'mgc_file_line',
+    url: '/report',
+  },
+  {
     key: 'custom',
     label: 'Custom',
     isTitle: true,

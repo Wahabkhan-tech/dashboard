@@ -4,7 +4,7 @@ import { Navigate, Route, RouteProps } from "react-router-dom";
 
 // components
 import PrivateRoute from "./PrivateRoute";
-import TicketsApp from "../pages/apps/Tickets";
+import TicketsApp from "../pages/Tickets";
 
 // lazy load all the views
 
@@ -102,11 +102,14 @@ const Chart = React.lazy(() => import('../pages/ui/Chart'));
 const VectorMaps = React.lazy(() => import('../pages/ui/maps/VectorMaps'));
 const GoogleMaps = React.lazy(() => import('../pages/ui/maps/GoogleMaps'));
 
-// New Uploads page
+// Existing Uploads page
 const Uploads = React.lazy(() => import("../pages/UploadFilesPage/UploadFilesPage"));
 
-// New Billings page
+// Existing Billings page
 const Billings = React.lazy(() => import("../pages/Billing/Billings"));
+
+// New Reports page
+const Reports = React.lazy(() => import("../pages/report/Reports"));
 
 export interface RoutesProps {
   path: RouteProps["path"];
@@ -221,7 +224,7 @@ const uploadsRoute: RoutesProps = {
   header: "Apps",
 };
 
-// New Billings route
+// Existing Billings route
 const billingsRoute: RoutesProps = {
   path: "/billings",
   name: "Billings",
@@ -231,7 +234,17 @@ const billingsRoute: RoutesProps = {
   header: "Apps",
 };
 
-const appRoutes = [calendarAppRoutes, ticketsAppRoutes, projectAppRoutes, kanbanAppRoutes, fileAppRoutes, uploadsRoute, billingsRoute];
+// New Reports route
+const reportsRoute: RoutesProps = {
+  path: "/report",
+  name: "Reports",
+  element: <Reports />,
+  route: PrivateRoute,
+  icon: "mgc_file_line",
+  header: "Apps",
+};
+
+const appRoutes = [calendarAppRoutes, ticketsAppRoutes, projectAppRoutes, kanbanAppRoutes, fileAppRoutes, uploadsRoute, billingsRoute, reportsRoute];
 
 // pages
 const customPagesRoutes = {
@@ -636,7 +649,7 @@ const authRoutes: RoutesProps[] = [
     route: Route,
   },
   {
-    path: "/auth	device: Register",
+    path: "/auth/register",
     name: "Register",
     element: <Register />,
     route: Route,
