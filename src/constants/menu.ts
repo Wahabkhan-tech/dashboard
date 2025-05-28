@@ -52,8 +52,16 @@ const MENU_ITEMS: MenuItemTypes[] = [
     key: "apps-billings",
     label: "Billings",
     isTitle: false,
-    icon: "mgc_user_3_line",
+    icon: "mgc_credit_card_line",
     url: "/billings",
+  },
+  
+  {
+    key: "apps-clients",
+    label: "Clients",
+    isTitle: false,
+    icon: "mgc_user_3_line",
+    url: "/clients",
   },
   {
     key: "auth",

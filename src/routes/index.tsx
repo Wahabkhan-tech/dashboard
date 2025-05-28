@@ -7,27 +7,16 @@ import PrivateRoute from "./PrivateRoute";
 import TicketsApp from "../pages/Tickets";
 
 // lazy load all the views
-
-// auth
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Register = React.lazy(() => import("../pages/auth/Register"));
 const RecoverPassword = React.lazy(() => import("../pages/auth/RecoverPassword"));
 const LockScreen = React.lazy(() => import("../pages/auth/LockScreen"));
-
-// dashboard
 const Dashboard = React.lazy(() => import("../pages/dashboard/"));
-
-// apps
 const TicketsAppRoute = React.lazy(() => import("../pages/Tickets"));
-
-// reports
 const Reports = React.lazy(() => import("../pages/report/Reports"));
-
-// Restored Uploads page
 const Uploads = React.lazy(() => import("../pages/UploadFilesPage/UploadFilesPage"));
-
-// Restored Billings page
 const Billings = React.lazy(() => import("../pages/Billing/Billings"));
+const Clients = React.lazy(() => import("../pages/client/Clients")); // Add Clients
 
 export interface RoutesProps {
   path: RouteProps["path"];
@@ -68,13 +57,11 @@ const ticketsAppRoutes: RoutesProps = {
   path: "/apps/tickets",
   name: "Tickets",
   route: PrivateRoute,
-  roles: ["Admin"],
   icon: "mgc_coupon_line",
   element: <TicketsAppRoute />,
   header: "Apps",
 };
 
-// Reports
 const reportsRoute: RoutesProps = {
   path: "/report",
   name: "Reports",
@@ -84,7 +71,6 @@ const reportsRoute: RoutesProps = {
   header: "Apps",
 };
 
-// Restored Uploads route
 const uploadsRoute: RoutesProps = {
   path: "/uploads",
   name: "Upload Files",
@@ -94,13 +80,23 @@ const uploadsRoute: RoutesProps = {
   header: "Apps",
 };
 
-// Restored Billings route
 const billingsRoute: RoutesProps = {
   path: "/billings",
   name: "Billings",
   element: <Billings />,
   route: PrivateRoute,
   icon: "mgc_credit_card_line",
+  header: "Apps",
+};
+
+
+
+const clientsRoute: RoutesProps = {
+  path: "/clients",
+  name: "Clients",
+  element: <Clients />,
+  route: PrivateRoute,
+  icon: "mgc_user_3_line",
   header: "Apps",
 };
 
@@ -142,7 +138,14 @@ const otherPublicRoutes = [
   },
 ];
 
-const authProtectedRoutes = [dashboardRoutes, ticketsAppRoutes, reportsRoute, uploadsRoute, billingsRoute];
+const authProtectedRoutes = [
+  dashboardRoutes,
+  ticketsAppRoutes,
+  reportsRoute,
+  uploadsRoute,
+  billingsRoute,
+  clientsRoute, // Add Clients route
+];
 const publicRoutes = [...authRoutes, ...otherPublicRoutes];
 
 const flattenRoutes = (routes: RoutesProps[]) => {

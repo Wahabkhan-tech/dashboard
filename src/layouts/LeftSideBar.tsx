@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import SimpleBar from "simplebar-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getMenuItems } from "../helpers/menu";
 
 // constants
@@ -9,20 +9,19 @@ import AppMenu from "./Menu";
 import * as LayoutConstants from "../constants/layout";
 
 // store
-import { useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { changeSideBarType } from "../redux/actions";
 
 // images
-import logoLight from '../assets/images/logo-light.png';
-import logoDark from '../assets/images/logo-dark.png';
-import logoSm from '../assets/images/logo-sm.png';
+import logoLight from "../assets/images/logo-light.png";
+import logoDark from "../assets/images/logo-dark.png";
+import logoSm from "../assets/images/logo-sm.png";
 
 // components
 import { ProfileDropDown } from "../components";
 
 // avatar
-import profilePic from '../assets/images/users/avatar-6.jpg';
+import profilePic from "../assets/images/users/avatar-6.jpg";
 
 export type ProfileMenuItem = {
   label: string;
@@ -33,22 +32,20 @@ export type ProfileMenuItem = {
 /* Profile menu items */
 const profileMenus: ProfileMenuItem[] = [
   {
-    label: 'Lock Screen',
-    icon: 'mgc_lock_line me-2',
-    redirectTo: '/auth/lock-screen',
+    label: "Lock Screen",
+    icon: "mgc_lock_line me-2",
+    redirectTo: "/auth/lock-screen",
   },
   {
-    label: 'Logout',
-    icon: 'mgc_logout_line me-2',
-    redirectTo: '/auth/login',
+    label: "Logout",
+    icon: "mgc_logout_line me-2",
+    redirectTo: "/auth/login",
   },
 ];
 
 /* Sidebar content */
 const SideBarContent = () => {
-  return (
-    <AppMenu menuItems={getMenuItems()} />
-  );
+  return <AppMenu menuItems={getMenuItems()} />;
 };
 
 interface LeftSideBarProps {
@@ -91,6 +88,8 @@ const LeftSideBar = ({ isCondensed, isLight, hideLogo }: LeftSideBarProps) => {
     sideBarType: state.Layout.sideBarType,
   }));
 
+  const dispatch = useDispatch<AppDispatch>();
+
   const isHalfRight = sideBarType === "right-half";
 
   // Mock user data
@@ -102,6 +101,18 @@ const LeftSideBar = ({ isCondensed, isLight, hideLogo }: LeftSideBarProps) => {
 
   // State to manage dropdown visibility
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const handleLogout = () => {
+    // Dispatch logout action to reset auth state
+    dispatch({ type: "LOGOUT_SUCCESS" });
+
+    // Clear any local storage or session data
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Force redirect to login page with a full reload
+    window.location.href = "/auth/login";
+  };
 
   return (
     <React.Fragment>
@@ -166,14 +177,24 @@ const LeftSideBar = ({ isCondensed, isLight, hideLogo }: LeftSideBarProps) => {
               }}
             >
               {profileMenus.map((item, index) => (
-                <Link
-                  key={index}
-                  to={item.redirectTo}
-                  className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                  onClick={() => setIsDropdownOpen(false)}
-                >
-                  <i className={item.icon}></i> {item.label}
-                </Link>
+                <div key={index}>
+                  {item.label === "Logout" ? (
+                    <button
+                      onClick={handleLogout}
+                      className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md w-full text-left"
+                    >
+                      <i className={item.icon}></i> {item.label}
+                    </button>
+                  ) : (
+                    <Link
+                      to={item.redirectTo}
+                      className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      <i className={item.icon}></i> {item.label}
+                    </Link>
+                  )}
+                </div>
               ))}
             </div>
           )}
