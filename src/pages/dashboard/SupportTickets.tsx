@@ -14,9 +14,12 @@ const SupportTickets = () => {
             <span className="text-sm text-yellow-600">Medium Priority</span>
           </div>
         </div>
-        <button className="btn w-full bg-gray-200 text-gray-800 py-2 rounded-lg mt-2 hover:bg-gray-300 transition-colors duration-200">
-          View All Tickets
-        </button>
+       <div className="flex justify-center">
+  <button className="btn w-40 flex-row justify-center bg-gray-200 text-gray-800 py-2 rounded-lg mt-2 hover:bg-gray-300 transition-colors duration-200">
+    View All Tickets
+  </button>
+</div>
+
       </div>
     </div>
   );
