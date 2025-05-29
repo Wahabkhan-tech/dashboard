@@ -1,4 +1,4 @@
-import React, { ReactNode, Suspense, useEffect } from "react";
+import React, { ReactNode, Suspense, useEffect, useState } from "react";
 
 // redux
 import { useDispatch, useSelector } from "react-redux";
@@ -19,6 +19,9 @@ const RightSideBar = React.lazy(() => import("./RightSideBar"));
 
 // Import Chatbot
 import Chatbot from "./Chatbot";
+
+// Import menu types
+import { getMenuItems, MenuItemTypes } from "../helpers/menu";
 
 const loading = () => <div />;
 
@@ -49,9 +52,12 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
     isOpenRightSideBar: state.Layout.isOpenRightSideBar,
   }));
 
-  /**
-   * Layout defaults
-   */
+  // State for filtered menu items
+  const [filteredMenuItems, setFilteredMenuItems] = useState<MenuItemTypes[]>(
+    getMenuItems() as MenuItemTypes[]
+  );
+
+  // Layout defaults
   useEffect(() => {
     changeHTMLAttribute("data-mode", layoutTheme);
   }, [layoutTheme]);
@@ -84,16 +90,28 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
     document.getElementsByTagName("html")[0].removeAttribute("data-layout");
   }, []);
 
+  // Sidebar type toggling based on viewport width
   useEffect(() => {
     if (width <= 1140) {
       dispatch(changeSideBarType(layoutConstants.SideBarType.LEFT_SIDEBAR_TYPE_MOBILE));
     } else if (width > 1140) {
-      dispatch(changeSideBarType(layoutConstants.SideBarType.LEFT_SIDEBAR_TYPE_DEFAULT));
+      // Ensure we respect the current sidebar state (e.g., if it's SMALL due to collapse)
+      if (
+        sideBarType !== layoutConstants.SideBarType.LEFT_SIDEBAR_TYPE_SMALL &&
+        sideBarType !== layoutConstants.SideBarType.LEFT_SIDEBAR_TYPE_HOVER &&
+        sideBarType !== layoutConstants.SideBarType.LEFT_SIDEBAR_TYPE_HOVERACTIVE
+      ) {
+        dispatch(changeSideBarType(layoutConstants.SideBarType.LEFT_SIDEBAR_TYPE_DEFAULT));
+      }
     }
-  }, [width, dispatch]);
+  }, [width, dispatch, sideBarType]);
 
   const isCondensed = sideBarType === layoutConstants.SideBarType.LEFT_SIDEBAR_TYPE_SMALL;
   const isLight = sideBarTheme === layoutConstants.SideBarTheme.LEFT_SIDEBAR_THEME_LIGHT;
+
+  const handleFilterMenuItems = (items: MenuItemTypes[]) => {
+    setFilteredMenuItems(items);
+  };
 
   return (
     <>
@@ -109,12 +127,17 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
           }}
         >
           <Suspense fallback={loading()}>
-            <LeftSideBar isCondensed={isCondensed} isLight={isLight} />
+            <LeftSideBar
+              isCondensed={isCondensed}
+              isLight={isLight}
+              hideLogo={false}
+              filteredMenuItems={filteredMenuItems}
+            />
           </Suspense>
 
           <div className="page-content">
             <Suspense fallback={loading()}>
-              <Topbar />
+              <Topbar onFilterMenuItems={handleFilterMenuItems} />
             </Suspense>
 
             <main className="flex-grow p-6">
@@ -129,7 +152,6 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
           <RightSideBar />
         </Suspense>
 
-        {/* Add Chatbot */}
         <Chatbot />
       </Suspense>
     </>

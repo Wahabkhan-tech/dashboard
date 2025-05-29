@@ -1,9 +1,8 @@
-import { MENU_ITEMS, MenuItemTypes } from "../constants/menu";
+import { MenuItemTypes, MENU_ITEMS } from "../constants/menu";
 
-const getMenuItems = () => {
-  // NOTE - You can fetch from server and return here as well
+const getMenuItems = (): MenuItemTypes[] => {
   return MENU_ITEMS;
-}
+};
 
 const findAllParent = (
   menuItems: MenuItemTypes[],
@@ -19,11 +18,11 @@ const findAllParent = (
     }
   }
   return parents;
-}
+};
 
 const findMenuItem = (
   menuItems: MenuItemTypes[] | undefined,
-  menuItemKey: MenuItemTypes['key'] | undefined
+  menuItemKey: MenuItemTypes["key"] | undefined
 ): MenuItemTypes | null => {
   if (menuItems && menuItemKey) {
     for (let i = 0; i < menuItems.length; i++) {
@@ -35,6 +34,7 @@ const findMenuItem = (
     }
   }
   return null;
-}
+};
 
-export { getMenuItems, findAllParent, findMenuItem, };
+export { getMenuItems, findAllParent, findMenuItem };
+export type { MenuItemTypes };

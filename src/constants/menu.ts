@@ -52,16 +52,22 @@ const MENU_ITEMS: MenuItemTypes[] = [
     key: "apps-billings",
     label: "Billings",
     isTitle: false,
-    icon: "mgc_credit_card_line",
+    icon: "mgc_wallet_line",
     url: "/billings",
   },
-  
   {
     key: "apps-clients",
     label: "Clients",
     isTitle: false,
     icon: "mgc_user_3_line",
     url: "/clients",
+  },
+  {
+    key: "apps-messages",
+    label: "Messages",
+    isTitle: false,
+    icon: "mgc_message_2_line", // Changed to a fallback MingCute icon
+    url: "/messages",
   },
   {
     key: "auth",

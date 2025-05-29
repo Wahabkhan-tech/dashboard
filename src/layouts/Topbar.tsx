@@ -6,6 +6,7 @@ import { useViewPort } from "../hooks";
 import { changeSideBarType } from "../redux/actions";
 import { SideBarType } from "../constants/layout";
 import { Bell } from "feather-icons-react";
+import { getMenuItems, MenuItemTypes } from "../helpers/menu";
 
 const getPageName = (pathname: string): string => {
   const pathMap: { [key: string]: string } = {
@@ -15,6 +16,8 @@ const getPageName = (pathname: string): string => {
     "/report": "Reports",
     "/uploads": "Upload Files",
     "/billings": "Billings",
+    "/clients": "Clients", // Added for Clients page
+    "/messages": "Messages", // Added for Messages page
     "/auth/login": "Login",
     "/auth/register": "Register",
     "/auth/recover-password": "Recover Password",
@@ -23,10 +26,11 @@ const getPageName = (pathname: string): string => {
   return pathMap[pathname] || "Unknown Page";
 };
 
-// Extend SideBarType to include new state (assuming constants/layout.ts can be updated)
-const RIGHT_SIDEBAR_TYPE_HALF = "right-half";
+interface TopbarProps {
+  onFilterMenuItems: (filteredItems: MenuItemTypes[]) => void;
+}
 
-const Topbar = () => {
+const Topbar = ({ onFilterMenuItems }: TopbarProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const { width } = useViewPort();
   const location = useLocation();
@@ -37,56 +41,55 @@ const Topbar = () => {
     sideBarType: state.Layout.sideBarType,
   }));
 
+  // Handle search input and filter menu items
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    const filteredItems = getMenuItems().filter(
+      (item) =>
+        item.label.toLowerCase().includes(query.toLowerCase()) ||
+        (item.children?.some((child) =>
+          child.label.toLowerCase().includes(query.toLowerCase())
+        ) ?? false)
+    );
+
+    onFilterMenuItems(filteredItems);
+  };
+
   /**
-   * Toggle the leftmenu when having mobile screen or switch to right half
+   * Toggle the left sidebar between default and condensed (small) modes
    */
   const handleLeftMenuCallBack = () => {
     if (width < 1140) {
+      // Mobile behavior: toggle mobile sidebar
       if (sideBarType === SideBarType.LEFT_SIDEBAR_TYPE_MOBILE) {
         showLeftSideBarBackdrop();
-        document.getElementsByTagName('html')[0].classList.add('sidenav-enable');
+        document.getElementsByTagName("html")[0].classList.add("sidenav-enable");
       } else {
         dispatch(changeSideBarType(SideBarType.LEFT_SIDEBAR_TYPE_MOBILE));
       }
-    } else if (sideBarType === SideBarType.LEFT_SIDEBAR_TYPE_DEFAULT || sideBarType === RIGHT_SIDEBAR_TYPE_HALF) {
-      dispatch(changeSideBarType(RIGHT_SIDEBAR_TYPE_HALF));
-    } else if (sideBarType === SideBarType.LEFT_SIDEBAR_TYPE_SMALL) {
-      dispatch(changeSideBarType(SideBarType.LEFT_SIDEBAR_TYPE_DEFAULT));
-    } else if (sideBarType === SideBarType.LEFT_SIDEBAR_TYPE_MOBILE) {
-      showLeftSideBarBackdrop();
-      document.getElementsByTagName('html')[0].classList.add('sidenav-enable');
-      toggleBodyStyle(true);
-    } else if (sideBarType === SideBarType.LEFT_SIDEBAR_TYPE_HIDDEN) {
-      dispatch(changeSideBarType(SideBarType.LEFT_SIDEBAR_TYPE_DEFAULT));
-      document.getElementsByTagName('html')[0].classList.add('sidenav-enable');
     } else {
-      dispatch(changeSideBarType(SideBarType.LEFT_SIDEBAR_TYPE_DEFAULT));
+      // Desktop behavior: toggle between default and condensed
+      if (sideBarType === SideBarType.LEFT_SIDEBAR_TYPE_DEFAULT) {
+        dispatch(changeSideBarType(SideBarType.LEFT_SIDEBAR_TYPE_SMALL));
+      } else if (sideBarType === SideBarType.LEFT_SIDEBAR_TYPE_SMALL) {
+        dispatch(changeSideBarType(SideBarType.LEFT_SIDEBAR_TYPE_DEFAULT));
+      }
     }
   };
 
   /**
-   * toggling style to the body tag
-   */
-  function toggleBodyStyle(set: boolean) {
-    if (set === false) {
-      document.body.removeAttribute('style');
-    } else {
-      document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = '16px';
-    }
-  }
-
-  /**
-   * creates backdrop for leftsidebar
+   * Creates backdrop for mobile sidebar
    */
   function showLeftSideBarBackdrop() {
-    const backdrop = document.createElement('div');
-    backdrop.id = 'backdrop';
-    backdrop.className = 'transition-all fixed inset-0 z-40 bg-gray-900 bg-opacity-50 dark:bg-opacity-80';
+    const backdrop = document.createElement("div");
+    backdrop.id = "backdrop";
+    backdrop.className = "transition-all fixed inset-0 z-40 bg-gray-900 bg-opacity-50 dark:bg-opacity-80";
     document.body.appendChild(backdrop);
 
-    backdrop.addEventListener('click', function () {
-      document.getElementsByTagName('html')[0].classList.remove('sidenav-enable');
+    backdrop.addEventListener("click", function () {
+      document.getElementsByTagName("html")[0].classList.remove("sidenav-enable");
       toggleBodyStyle(false);
       dispatch(changeSideBarType(SideBarType.LEFT_SIDEBAR_TYPE_MOBILE));
       hideLeftSideBarBackdrop();
@@ -94,19 +97,25 @@ const Topbar = () => {
   }
 
   function hideLeftSideBarBackdrop() {
-    const backdrop = document.getElementById('backdrop');
-    document.getElementsByTagName('html')[0].classList.remove('sidenav-enable');
+    const backdrop = document.getElementById("backdrop");
+    document.getElementsByTagName("html")[0].classList.remove("sidenav-enable");
     if (backdrop) {
       document.body.removeChild(backdrop);
-      document.body.style.removeProperty('overflow');
+      document.body.style.removeProperty("overflow");
     }
   }
 
-  // Handle search input
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    console.log("Searching for:", e.target.value); // Placeholder for search logic
-  };
+  /**
+   * Toggles style to the body tag for mobile sidebar
+   */
+  function toggleBodyStyle(set: boolean) {
+    if (set === false) {
+      document.body.removeAttribute("style");
+    } else {
+      document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = "16px";
+    }
+  }
 
   return (
     <header className="app-header flex items-center px-4 py-2 bg-white shadow-md dark:bg-gray-800">
@@ -133,14 +142,30 @@ const Topbar = () => {
       {/* Search Bar, Upload File Button, and Notification Icon */}
       <div className="flex items-center space-x-2">
         {/* Search Bar */}
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchQuery}
-          onChange={handleSearchChange}
-          className="w-48 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
-          aria-label="Search"
-        />
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search menu..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            className="w-48 pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-600"
+            aria-label="Search"
+          />
+          <svg
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
 
         {/* Upload File Button */}
         <button

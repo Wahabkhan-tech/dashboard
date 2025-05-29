@@ -1,13 +1,12 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom';
-// import { Collapse } from 'react-bootstrap';
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { SimpleCollapse } from "../components/FrostUI";
 
 // helpers
-import { findAllParent, findMenuItem } from '../helpers/menu';
+import { findAllParent, findMenuItem } from "../helpers/menu";
 
 // constants
-import { MenuItemTypes } from '../constants/menu'
-import { SimpleCollapse } from '../components/FrostUI';
+import { MenuItemTypes } from "../constants/menu";
 
 interface SubMenus {
   item: MenuItemTypes;
@@ -16,10 +15,17 @@ interface SubMenus {
   activeMenuItems?: Array<string>;
   toggleMenu?: (item: any, status: boolean) => void;
   className?: string;
+  isCondensed?: boolean; // Add isCondensed prop to SubMenus
 }
 
-const MenuItemWithChildren = ({ item, linkClassName, subMenuClassNames, activeMenuItems, toggleMenu, }: SubMenus) => {
-
+const MenuItemWithChildren = ({
+  item,
+  linkClassName,
+  subMenuClassNames,
+  activeMenuItems,
+  toggleMenu,
+  isCondensed,
+}: SubMenus) => {
   const [open, setOpen] = useState<boolean>(activeMenuItems!.includes(item.key));
 
   useEffect(() => {
@@ -34,58 +40,58 @@ const MenuItemWithChildren = ({ item, linkClassName, subMenuClassNames, activeMe
   };
 
   return (
-    <li className='menu-item'>
+    <li className="menu-item">
       <Link
-        to='#'
-        className={`${linkClassName} ${(activeMenuItems!.includes(item.key) && open) ? 'open' : ''}`}
+        to="#"
+        className={`${linkClassName} ${(activeMenuItems!.includes(item.key) && open) ? "open" : ""}`}
         aria-expanded={open}
         data-menu-key={item.key}
         onClick={toggleMenuItem}
       >
         {item.icon && (
-          <span className='menu-icon'>
+          <span className="menu-icon">
             <i className={item.icon} />
           </span>
         )}
-        <span className='menu-text'> {item.label} </span>
-        <span className='menu-arrow' />
+        {!isCondensed && <span className="menu-text"> {item.label} </span>}
+        {!isCondensed && <span className="menu-arrow" />}
       </Link>
       <SimpleCollapse open={open} as="ul" classNames={subMenuClassNames}>
-        {(item.children || []).map((child, idx) => {
-          return (
-            <React.Fragment key={idx}>
-              {child.children ? (
-                <MenuItemWithChildren
-                  item={child}
-                  linkClassName={activeMenuItems!.includes(child.key) ? " active" : ""}
-                  activeMenuItems={activeMenuItems}
-                  subMenuClassNames=''
-                  toggleMenu={toggleMenu}
-                />
-              ) : (
-                <MenuItem
-                  item={child}
-                  className='menu-item'
-                  linkClassName={`menu-link ${(activeMenuItems!.includes(child.key)) ? " active" : ""}`}
-                />
-              )}
-            </React.Fragment>
-          );
-        })}
+        {(item.children || []).map((child, idx) => (
+          <React.Fragment key={idx}>
+            {child.children ? (
+              <MenuItemWithChildren
+                item={child}
+                linkClassName={activeMenuItems!.includes(child.key) ? " active" : ""}
+                activeMenuItems={activeMenuItems}
+                subMenuClassNames=""
+                toggleMenu={toggleMenu}
+                isCondensed={isCondensed}
+              />
+            ) : (
+              <MenuItem
+                item={child}
+                className="menu-item"
+                linkClassName={`menu-link ${activeMenuItems!.includes(child.key) ? " active" : ""}`}
+                isCondensed={isCondensed}
+              />
+            )}
+          </React.Fragment>
+        ))}
       </SimpleCollapse>
     </li>
   );
 };
 
-const MenuItem = ({ item, linkClassName }: SubMenus) => {
+const MenuItem = ({ item, linkClassName, isCondensed }: SubMenus) => {
   return (
-    <li className={'menu-item'}>
-      <MenuItemLink item={item} className={linkClassName} />
+    <li className="menu-item">
+      <MenuItemLink item={item} className={linkClassName} isCondensed={isCondensed} />
     </li>
   );
 };
 
-const MenuItemLink = ({ item, className }: SubMenus) => {
+const MenuItemLink = ({ item, className, isCondensed }: SubMenus) => {
   return (
     <Link
       to={item.url!}
@@ -94,27 +100,26 @@ const MenuItemLink = ({ item, className }: SubMenus) => {
       data-menu-key={item.key}
     >
       {item.icon && (
-        <span className='menu-icon'>
+        <span className="menu-icon">
           <i className={item.icon} />
         </span>
       )}
-      <span className='menu-text'>{item.label}</span>
+      {!isCondensed && <span className="menu-text">{item.label}</span>}
     </Link>
-  )
-}
+  );
+};
 
 /**
  * Renders the application menu
  */
 interface AppMenuProps {
   menuItems: MenuItemTypes[];
+  isCondensed?: boolean; // Add isCondensed prop to AppMenuProps
 }
 
-const AppMenu = ({ menuItems }: AppMenuProps) => {
+const AppMenu = ({ menuItems, isCondensed }: AppMenuProps) => {
   const location = useLocation();
-
   const menuRef = useRef(null);
-
   const [activeMenuItems, setActiveMenuItems] = useState<Array<string>>([]);
 
   /**
@@ -122,7 +127,7 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
    */
   const toggleMenu = (menuItem: MenuItemTypes, show: boolean) => {
     if (show) {
-      setActiveMenuItems([menuItem['key'], ...findAllParent(menuItems, menuItem),]);
+      setActiveMenuItems([menuItem["key"], ...findAllParent(menuItems, menuItem)]);
     }
   };
 
@@ -136,10 +141,10 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
     if (div) {
       const items: any = div.getElementsByClassName("side-nav-link-ref");
       for (let i = 0; i < items.length; ++i) {
-        let trimmedURL = location?.pathname?.replaceAll(process.env.PUBLIC_URL || '', '');
+        let trimmedURL = location?.pathname?.replaceAll(process.env.PUBLIC_URL || "", "");
         const url = items[i].pathname;
         if (trimmedURL === process.env.PUBLIC_URL + "/") {
-          trimmedURL += "dashboard"
+          trimmedURL += "dashboard";
         }
         if (trimmedURL === url?.replaceAll(process.env.PUBLIC_URL, "")) {
           matchingMenuItem = items[i];
@@ -151,13 +156,15 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
         const mid = matchingMenuItem.getAttribute("data-menu-key");
         const activeMt = findMenuItem(menuItems, mid as any);
         if (activeMt) {
-          setActiveMenuItems([activeMt["key"], ...findAllParent(menuItems, activeMt),]);
+          setActiveMenuItems([activeMt["key"], ...findAllParent(menuItems, activeMt)]);
         }
 
         setTimeout(function () {
           const activatedItem = matchingMenuItem!;
           if (activatedItem != null) {
-            const simplebarContent = document.querySelector('#leftside-menu-container .simplebar-content-wrapper');
+            const simplebarContent = document.querySelector(
+              "#leftside-menu-container .simplebar-content-wrapper"
+            );
             const offset = activatedItem!.offsetTop - 300;
             if (simplebarContent && offset > 100) {
               scrollTo(simplebarContent, offset, 600);
@@ -168,13 +175,15 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
         // scrollTo (Left Side Bar Active Menu)
         const easeInOutQuad = (t: number, b: number, c: number, d: number) => {
           t /= d / 2;
-          if (t < 1) return c / 2 * t * t + b;
+          if (t < 1) return (c / 2) * t * t + b;
           t--;
-          return -c / 2 * (t * (t - 2) - 1) + b;
-        }
+          return (-c / 2) * (t * (t - 2) - 1) + b;
+        };
 
         const scrollTo = (element: any, to: any, duration: any) => {
-          const start = element.scrollTop, change = to - start, increment = 20;
+          const start = element.scrollTop,
+            change = to - start,
+            increment = 20;
           let currentTime = 0;
           const animateScroll = function () {
             currentTime += increment;
@@ -185,7 +194,7 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
             }
           };
           animateScroll();
-        }
+        };
       }
     }
   }, [location, menuItems]);
@@ -197,38 +206,36 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
 
   return (
     <>
-      <ul
-        className='menu'
-        ref={menuRef}
-        id='main-side-menu'
-      >
-        {(menuItems || []).map((item, idx) => {
-          return (
-            <React.Fragment key={idx}>
-              {item.isTitle ? (<li className='menu-title'>
-                {item.label}
-              </li>) : (<>
+      <ul className="menu" ref={menuRef} id="main-side-menu">
+        {(menuItems || []).map((item, idx) => (
+          <React.Fragment key={idx}>
+            {item.isTitle ? (
+              <li className={`menu-title ${isCondensed ? "hidden" : ""}`}>{item.label}</li>
+            ) : (
+              <>
                 {item.children ? (
                   <MenuItemWithChildren
                     item={item}
                     toggleMenu={toggleMenu}
-                    subMenuClassNames='sub-menu'
+                    subMenuClassNames="sub-menu"
                     activeMenuItems={activeMenuItems}
-                    linkClassName={`menu-link ${(activeMenuItems!.includes(item.key)) ? 'active' : ''}`}
+                    linkClassName={`menu-link ${activeMenuItems.includes(item.key) ? "active" : ""}`}
+                    isCondensed={isCondensed}
                   />
                 ) : (
                   <MenuItem
                     item={item}
-                    linkClassName={`menu-link ${(activeMenuItems!.includes(item.key)) ? 'active' : ''}`}
+                    linkClassName={`menu-link ${activeMenuItems.includes(item.key) ? "active" : ""}`}
+                    isCondensed={isCondensed}
                   />
                 )}
-              </>)}
-            </React.Fragment>
-          )
-        })}
+              </>
+            )}
+          </React.Fragment>
+        ))}
       </ul>
     </>
-  )
-}
+  );
+};
 
-export default AppMenu
+export default AppMenu;

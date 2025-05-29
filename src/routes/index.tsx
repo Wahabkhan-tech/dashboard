@@ -16,7 +16,8 @@ const TicketsAppRoute = React.lazy(() => import("../pages/Tickets"));
 const Reports = React.lazy(() => import("../pages/report/Reports"));
 const Uploads = React.lazy(() => import("../pages/UploadFilesPage/UploadFilesPage"));
 const Billings = React.lazy(() => import("../pages/Billing/Billings"));
-const Clients = React.lazy(() => import("../pages/client/Clients")); // Add Clients
+const Clients = React.lazy(() => import("../pages/client/Clients"));
+const Messages = React.lazy(() => import("../pages/messages/Messages")); // Add Messages
 
 export interface RoutesProps {
   path: RouteProps["path"];
@@ -100,6 +101,15 @@ const clientsRoute: RoutesProps = {
   header: "Apps",
 };
 
+const messagesRoute: RoutesProps = {
+  path: "/messages",
+  name: "Messages",
+  element: <Messages />,
+  route: PrivateRoute,
+  icon: "mgc_message_line",
+  header: "Apps",
+};
+
 // auth
 const authRoutes: RoutesProps[] = [
   {
@@ -144,7 +154,8 @@ const authProtectedRoutes = [
   reportsRoute,
   uploadsRoute,
   billingsRoute,
-  clientsRoute, // Add Clients route
+  clientsRoute,
+  messagesRoute, // Add Messages route
 ];
 const publicRoutes = [...authRoutes, ...otherPublicRoutes];
 
