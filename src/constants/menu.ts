@@ -66,7 +66,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
     key: "apps-messages",
     label: "Messages",
     isTitle: false,
-    icon: "mgc_message_2_line", // Changed to a fallback MingCute icon
+    icon: "mgc_message_2_line",
     url: "/messages",
   },
   {
@@ -103,4 +103,5 @@ const MENU_ITEMS: MenuItemTypes[] = [
   },
 ];
 
+export const getMenuItems = (): MenuItemTypes[] => MENU_ITEMS; // Ensure this is exported
 export { MENU_ITEMS };

@@ -17,106 +17,92 @@ export function configureFakeBackend() {
   const users: UserData[] = [
     {
       id: 1,
-      username: "konrix@coderthemes.com",
-      password: "konrix",
-      firstName: "konrix",
-      lastName: "coderthemes",
-      role: "Admin",
-      token:
-        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb2RlcnRoZW1lcyIsImlhdCI6MTU4NzM1NjY0OSwiZXhwIjoxOTAyODg5NDQ5LCJhdWQiOiJjb2RlcnRoZW1lcy5jb20iLCJzdWIiOiJzdXBwb3J0QGNvZGVydGhlbWVzLmNvbSIsImxhc3ROYW1lIjoiVGVzdCIsIkVtYWlsIjoic3VwcG9ydEBjb2RlcnRoZW1lcy5jb20iLCJSb2xlIjoiQWRtaW4iLCJmaXJzdE5hbWUiOiJIeXBlciJ9.P27f7JNBF-vOaJFpkn-upfEh3zSprYfyhTOYhijykdI",
-    },
-    {
-      id: 1,
-      username: "test",
-      password: "test",
-      firstName: "Test",
+      username: "admin@consultancy.com",
+      password: "admin123",
+      firstName: "Admin",
       lastName: "User",
       role: "Admin",
-      token:
-        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb2RlcnRoZW1lcyIsImlhdCI6MTU4NzM1NjY0OSwiZXhwIjoxOTAyODg5NDQ5LCJhdWQiOiJjb2RlcnRoZW1lcy5jb20iLCJzdWIiOiJzdXBwb3J0QGNvZGVydGhlbWVzLmNvbSIsImxhc3ROYW1lIjoiVGVzdCIsIkVtYWlsIjoic3VwcG9ydEBjb2RlcnRoZW1lcy5jb20iLCJSb2xlIjoiQWRtaW4iLCJmaXJzdE5hbWUiOiJIeXBlciJ9.P27f7JNBF-vOaJFpkn-upfEh3zSprYfyhTOYhijykdI",
+      token: "admin-token",
+    },
+    {
+      id: 2,
+      username: "consultant@consultancy.com",
+      password: "consult123",
+      firstName: "Consultant",
+      lastName: "User",
+      role: "Consultant",
+      token: "consultant-token",
+    },
+    {
+      id: 3,
+      username: "customer@consultancy.com",
+      password: "customer123",
+      firstName: "Customer",
+      lastName: "User",
+      role: "Customer",
+      token: "customer-token",
     },
   ];
 
-  mock.onPost("/login/").reply(function (config) {
-    return new Promise(function (resolve, reject) {
-      setTimeout(function () {
-        // get parameters from post request
+  mock.onPost("/login/").reply((config) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
         const params = JSON.parse(config.data);
-
-        // find if any user matches login credentials
-        const filteredUsers = users.filter((user) => {
-          return (
-            user.username === params.username &&
-            user.password === params.password
-          );
-        });
+        const filteredUsers = users.filter(
+          (user) => user.username === params.username && user.password === params.password
+        );
 
         if (filteredUsers.length) {
-          // if login details are valid return user details and fake jwt token
           const user = filteredUsers[0];
+          // Use the correct sessionStorage key to match APICore
+          sessionStorage.setItem("konrix_user", JSON.stringify(user));
+          console.log("User logged in:", user);
           resolve([200, user]);
         } else {
-          // else return error
           resolve([401, { message: "Username or password is incorrect" }]);
         }
       }, 1000);
     });
   });
 
-  mock.onPost("/register/").reply(function (config) {
-    return new Promise(function (resolve, reject) {
-      setTimeout(function () {
-        // get parameters from post request
+  mock.onPost("/register/").reply((config) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
         const params = JSON.parse(config.data);
-
-        // add new users
         const [firstName, lastName] = params.fullname.split(" ");
         const newUser: UserData = {
           id: users.length + 1,
-          username: firstName,
+          username: params.email,
           password: params.password,
-          firstName: firstName,
-          lastName: lastName,
-          role: "Admin",
-          token:
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb2RlcnRoZW1lcyIsImlhdCI6MTU4NzM1NjY0OSwiZXhwIjoxOTAyODg5NDQ5LCJhdWQiOiJjb2RlcnRoZW1lcy5jb20iLCJzdWIiOiJzdXBwb3J0QGNvZGVydGhlbWVzLmNvbSIsImxhc3ROYW1lIjoiVGVzdCIsIkVtYWlsIjoic3VwcG9ydEBjb2RlcnRoZW1lcy5jb20iLCJSb2xlIjoiQWRtaW4iLCJmaXJzdE5hbWUiOiJIeXBlciJ9.P27f7JNBF-vOaJFpkn-upfEh3zSprYfyhTOYhijykdI",
+          firstName: firstName || "",
+          lastName: lastName || "",
+          role: "Customer", // Default role for new users
+          token: `user-token-${users.length + 1}`,
         };
         users.push(newUser);
-
+        sessionStorage.setItem("konrix_user", JSON.stringify(newUser));
+        console.log("User registered:", newUser);
         resolve([200, newUser]);
       }, 1000);
     });
   });
 
-  mock.onPost("/forgot-password/").reply(function (config) {
-    return new Promise(function (resolve, reject) {
-      setTimeout(function () {
-        // get parameters from post request
+  mock.onPost("/forgot-password/").reply((config) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
         const params = JSON.parse(config.data);
-
-        // find if any user matches login credentials
-        const filteredUsers = users.filter((user) => {
-          return user.username === params.username;
-        });
+        const filteredUsers = users.filter((user) => user.username === params.username);
 
         if (filteredUsers.length) {
-          // if login details are valid return user details and fake jwt token
-          const responseJson = {
-            message:
-              "We've sent you a link to reset password to your registered email.",
-          };
-          resolve([200, responseJson]);
+          resolve([200, { message: "We've sent you a link to reset password to your registered email." }]);
         } else {
-          // else return error
-          resolve([
-            401,
-            {
-              message:
-                "Sorry, we could not find any registered user with entered username",
-            },
-          ]);
+          resolve([401, { message: "Sorry, we could not find any registered user with entered username" }]);
         }
       }, 1000);
     });
   });
+}
+
+if (process.env.NODE_ENV === "development") {
+  configureFakeBackend();
 }

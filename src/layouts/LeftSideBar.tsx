@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import SimpleBar from "simplebar-react";
 import { useSelector, useDispatch } from "react-redux";
 import { getMenuItems, MenuItemTypes } from "../helpers/menu";
+import { APICore } from "../helpers/api/apiCore"; // Import APICore
 
 // constants
 import AppMenu from "./Menu";
@@ -105,15 +106,25 @@ const LeftSideBar = ({ isCondensed, isLight, hideLogo, filteredMenuItems }: Left
 
   const isHalfRight = sideBarType === "right-half";
 
-  // State to manage user name (from previous Settings page integration)
+  // State to manage user name and role (from sessionStorage)
   const [userName, setUserName] = useState(localStorage.getItem("userName") || "John Doe");
+  const [userRole, setUserRole] = useState<string | null>(null);
 
-  // Update user name when localStorage changes
+  // Initialize APICore
+  const api = new APICore();
+
+  // Update user name and role when sessionStorage changes or on mount
   useEffect(() => {
     const handleStorageChange = () => {
-      setUserName(localStorage.getItem("userName") || "John Doe");
+      const user = api.getLoggedInUser();
+      setUserName(user?.firstName + " " + user?.lastName || localStorage.getItem("userName") || "John Doe");
+      setUserRole(user?.role || null);
     };
 
+    // Set initial values
+    handleStorageChange();
+
+    // Add event listener for storage changes
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
@@ -121,7 +132,7 @@ const LeftSideBar = ({ isCondensed, isLight, hideLogo, filteredMenuItems }: Left
   // User data
   const user = {
     name: userName,
-    role: "Admin",
+    role: userRole || "Admin", // Fallback to "Admin" if role is not available
     avatar: profilePic,
   };
 
@@ -135,148 +146,148 @@ const LeftSideBar = ({ isCondensed, isLight, hideLogo, filteredMenuItems }: Left
     window.location.href = "/auth/login";
   };
 
-    return (
-      <React.Fragment>
-        <div
-          className={`app-menu ${isCondensed ? "condensed" : ""} ${isLight ? "light" : ""} ${
-            isHalfRight ? "w-32 right-0 translate-x-full" : ""
-          } bg-white dark:bg-gray-800 shadow-md h-full fixed transition-all duration-300 z-40`}
-          style={{
-            width: isCondensed ? "60px" : isHalfRight ? "128px" : "256px",
-            transform: isHalfRight ? "translateX(-50%)" : "translateX(0)",
-            left: isCondensed ? "0" : "",
-          }}
-        >
-          {!hideLogo && (
-            <Link to="/" className="logo-box p-4 border-b border-gray-200 dark:border-gray-700">
-              <div className="logo-light">
-                <img
-                  src={logoLight}
-                  className="logo-lg"
-                  style={{ height: isCondensed ? "30px" : isHalfRight ? "40px" : "60px" }}
-                  alt="Light logo"
-                />
-                <img
-                  src={logoSm}
-                  className="logo-sm"
-                  style={{ height: isCondensed ? "20px" : isHalfRight ? "30px" : "40px" }}
-                  alt="Small logo"
-                />
-              </div>
-              <div className="logo-dark">
-                <img
-                  src={logoDark}
-                  className="logo-lg"
-                  style={{ height: isCondensed ? "30px" : isHalfRight ? "40px" : "60px" }}
-                  alt="Dark logo"
-                />
-                <img
-                  src={logoSm}
-                  className="logo-sm"
-                  style={{ height: isCondensed ? "20px" : isHalfRight ? "30px" : "40px" }}
-                  alt="Small logo"
-                />
-              </div>
-            </Link>
-          )}
-
-          <HoverMenuToggler />
-
-          <SimpleBar
-            className="scrollbar h-[calc(100%-140px)]"
-            id="leftside-menu-container"
-          >
-            <SideBarContent filteredMenuItems={filteredMenuItems} />
-
-            {/* Added "Unlimited Access" Help Box (optional, can be removed if not needed) */}
-            <div className="my-10 mx-5">
-              <div
-                className={`help-box p-6 bg-black/5 text-center rounded-md transition-opacity duration-300 ${
-                  isCondensed ? "opacity-0 h-0 overflow-hidden" : ""
-                }`}
-              >
-                <div className="flex justify-center mb-4">
-                  <svg width="30" height="18" aria-hidden="true">
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M15 0c-4 0-6.5 2-7.5 6 1.5-2 3.25-2.75 5.25-2.25 1.141.285 1.957 1.113 2.86 2.03C17.08 7.271 18.782 9 22.5 9c4 0 6.5-2 7.5-6-1.5 2-3.25 2.75-5.25 2.25-1.141-.285-1.957-1.113-2.86-2.03C20.42 1.728 18.718 0 15 0ZM7.5 9C3.5 9 1 11 0 15c1.5-2 3.25-2.75 5.25-2.25 1.141.285 1.957 1.113 2.86 2.03C9.58 16.271 11.282 18 15 18c4 0 6.5-2 7.5-6-1.5 2-3.25 2.75-5.25 2.25-1.141-.285-1.957-1.113-2.86-2.03C12.92 10.729 11.218 9 7.5 9Z"
-                      fill="#38BDF8"
-                    ></path>
-                  </svg>
-                </div>
-                <h5 className="mb-2">Unlimited Access</h5>
-                <p className="mb-3">Upgrade to plan to get access to unlimited reports</p>
-                <a href="" className="btn btn-sm bg-secondary text-white">Upgrade</a>
-              </div>
-            </div>
-          </SimpleBar>
-
-          {/* Profile Section with Avatar, Name, and Role */}
-          <div
-            className={`relative p-4 border-t border-gray-200 dark:border-gray-700 transition-all duration-300 ${
-              isCondensed ? "p-2" : ""
-            }`}
-          >
-            <button
-              className="flex items-center w-full text-left focus:outline-none"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              aria-expanded={isDropdownOpen}
-              aria-label="Toggle Profile Dropdown"
-            >
+  return (
+    <React.Fragment>
+      <div
+        className={`app-menu ${isCondensed ? "condensed" : ""} ${isLight ? "light" : ""} ${
+          isHalfRight ? "w-32 right-0 translate-x-full" : ""
+        } bg-white dark:bg-gray-800 shadow-md h-full fixed transition-all duration-300 z-40`}
+        style={{
+          width: isCondensed ? "60px" : isHalfRight ? "128px" : "256px",
+          transform: isHalfRight ? "translateX(-50%)" : "translateX(0)",
+          left: isCondensed ? "0" : "",
+        }}
+      >
+        {!hideLogo && (
+          <Link to="/" className="logo-box p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="logo-light">
               <img
-                src={user.avatar}
-                alt="User Avatar"
-                className={`w-${isCondensed ? "8" : "10"} h-${isCondensed ? "8" : "10"} rounded-full mr-${
-                  isCondensed ? "1" : "3"
-                }`}
+                src={logoLight}
+                className="logo-lg"
+                style={{ height: isCondensed ? "30px" : isHalfRight ? "40px" : "60px" }}
+                alt="Light logo"
               />
-              {!isCondensed && (
-                <div>
-                  <div className="font-semibold text-gray-700 dark:text-gray-300">{user.name}</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">{user.role}</div>
-                </div>
-              )}
-            </button>
-            {/* Dropdown Menu */}
-            {isDropdownOpen && (
-              <div
-                className={`absolute bg-white dark:bg-gray-800 shadow-lg rounded-lg w-48 p-2 z-50 bottom-full mb-2 ${
-                  isCondensed ? "hidden" : ""
-                }`}
-                style={{
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  maxHeight: "200px",
-                  overflowY: "auto",
-                }}
-              >
-                {profileMenus.map((item, index) => (
-                  <div key={index}>
-                    {item.label === "Logout" ? (
-                      <button
-                        onClick={handleLogout}
-                        className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md w-full text-left"
-                      >
-                        <i className={item.icon}></i> {item.label}
-                      </button>
-                    ) : (
-                      <Link
-                        to={item.redirectTo}
-                        className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                        onClick={() => setIsDropdownOpen(false)}
-                      >
-                        <i className={item.icon}></i> {item.label}
-                      </Link>
-                    )}
-                  </div>
-                ))}
+              <img
+                src={logoSm}
+                className="logo-sm"
+                style={{ height: isCondensed ? "20px" : isHalfRight ? "30px" : "40px" }}
+                alt="Small logo"
+              />
+            </div>
+            <div className="logo-dark">
+              <img
+                src={logoDark}
+                className="logo-lg"
+                style={{ height: isCondensed ? "30px" : isHalfRight ? "40px" : "60px" }}
+                alt="Dark logo"
+              />
+              <img
+                src={logoSm}
+                className="logo-sm"
+                style={{ height: isCondensed ? "20px" : isHalfRight ? "30px" : "40px" }}
+                alt="Small logo"
+              />
+            </div>
+          </Link>
+        )}
+
+        <HoverMenuToggler />
+
+        <SimpleBar
+          className="scrollbar h-[calc(100%-140px)]"
+          id="leftside-menu-container"
+        >
+          <SideBarContent filteredMenuItems={filteredMenuItems} />
+
+          {/* Added "Unlimited Access" Help Box (optional, can be removed if not needed) */}
+          <div className="my-10 mx-5">
+            <div
+              className={`help-box p-6 bg-black/5 text-center rounded-md transition-opacity duration-300 ${
+                isCondensed ? "opacity-0 h-0 overflow-hidden" : ""
+              }`}
+            >
+              <div className="flex justify-center mb-4">
+                <svg width="30" height="18" aria-hidden="true">
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M15 0c-4 0-6.5 2-7.5 6 1.5-2 3.25-2.75 5.25-2.25 1.141.285 1.957 1.113 2.86 2.03C17.08 7.271 18.782 9 22.5 9c4 0 6.5-2 7.5-6-1.5 2-3.25 2.75-5.25 2.25-1.141-.285-1.957-1.113-2.86-2.03C20.42 1.728 18.718 0 15 0ZM7.5 9C3.5 9 1 11 0 15c1.5-2 3.25-2.75 5.25-2.25 1.141.285 1.957 1.113 2.86 2.03C9.58 16.271 11.282 18 15 18c4 0 6.5-2 7.5-6-1.5 2-3.25 2.75-5.25 2.25-1.141-.285-1.957-1.113-2.86-2.03C12.92 10.729 11.218 9 7.5 9Z"
+                    fill="#38BDF8"
+                  ></path>
+                </svg>
+              </div>
+              <h5 className="mb-2">Unlimited Access</h5>
+              <p className="mb-3">Upgrade to plan to get access to unlimited reports</p>
+              <a href="" className="btn btn-sm bg-secondary text-white">Upgrade</a>
+            </div>
+          </div>
+        </SimpleBar>
+
+        {/* Profile Section with Avatar, Name, and Role */}
+        <div
+          className={`relative p-4 border-t border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+            isCondensed ? "p-2" : ""
+          }`}
+        >
+          <button
+            className="flex items-center w-full text-left focus:outline-none"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            aria-expanded={isDropdownOpen}
+            aria-label="Toggle Profile Dropdown"
+          >
+            <img
+              src={user.avatar}
+              alt="User Avatar"
+              className={`w-${isCondensed ? "8" : "10"} h-${isCondensed ? "8" : "10"} rounded-full mr-${
+                isCondensed ? "1" : "3"
+              }`}
+            />
+            {!isCondensed && (
+              <div>
+                <div className="font-semibold text-gray-700 dark:text-gray-300">{user.name}</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">{user.role}</div>
               </div>
             )}
-          </div>
+          </button>
+          {/* Dropdown Menu */}
+          {isDropdownOpen && (
+            <div
+              className={`absolute bg-white dark:bg-gray-800 shadow-lg rounded-lg w-48 p-2 z-50 bottom-full mb-2 ${
+                isCondensed ? "hidden" : ""
+              }`}
+              style={{
+                left: "50%",
+                transform: "translateX(-50%)",
+                maxHeight: "200px",
+                overflowY: "auto",
+              }}
+            >
+              {profileMenus.map((item, index) => (
+                <div key={index}>
+                  {item.label === "Logout" ? (
+                    <button
+                      onClick={handleLogout}
+                      className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md w-full text-left"
+                    >
+                      <i className={item.icon}></i> {item.label}
+                    </button>
+                  ) : (
+                    <Link
+                      to={item.redirectTo}
+                      className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      <i className={item.icon}></i> {item.label}
+                    </Link>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      </React.Fragment>
-    );
+      </div>
+    </React.Fragment>
+  );
 };
 
 export default LeftSideBar;

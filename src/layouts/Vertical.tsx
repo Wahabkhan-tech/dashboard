@@ -1,27 +1,19 @@
 import React, { ReactNode, Suspense, useEffect, useState } from "react";
-
-// redux
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import * as layoutConstants from "../constants/layout";
-
-// hooks
 import { useViewPort } from "../hooks";
 import { changeHTMLAttribute } from "../utils/layout";
 import { changeSideBarType } from "../redux/actions";
 import { Preloader } from "../components";
-
-// code splitting and lazy loading
-const Topbar = React.lazy(() => import("./Topbar"));
-const LeftSideBar = React.lazy(() => import("./LeftSideBar"));
-const Footer = React.lazy(() => import("./Footer"));
-const RightSideBar = React.lazy(() => import("./RightSideBar"));
-
-// Import Chatbot
+import Topbar from "./Topbar";
+import LeftSideBar from "./LeftSideBar";
+import Footer from "./Footer";
+import RightSideBar from "./RightSideBar";
 import Chatbot from "./Chatbot";
-
-// Import menu types
 import { getMenuItems, MenuItemTypes } from "../helpers/menu";
+import { filterMenuItemsByRole, UserRoles } from "../constants/permissions";
+import { APICore } from "../helpers/api/apiCore";
 
 const loading = () => <div />;
 
@@ -32,6 +24,7 @@ interface VerticalLayoutProps {
 const VerticalLayout = ({ children }: VerticalLayoutProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const { width } = useViewPort();
+  const api = new APICore();
 
   const {
     layoutTheme,
@@ -49,15 +42,25 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
     sideBarTheme: state.Layout.sideBarTheme,
     sideBarType: state.Layout.sideBarType,
     layoutPosition: state.Layout.layoutPosition,
-    isOpenRightSideBar: state.Layout.isOpenRightSideBar,
   }));
 
-  // State for filtered menu items
-  const [filteredMenuItems, setFilteredMenuItems] = useState<MenuItemTypes[]>(
-    getMenuItems() as MenuItemTypes[]
-  );
+  const user = api.getLoggedInUser();
+  console.log("Logged in user:", user); // Debug user object
+  const userRole = user?.role || UserRoles.CUSTOMER;
 
-  // Layout defaults
+  const [filteredMenuItems, setFilteredMenuItems] = useState<MenuItemTypes[]>([]);
+
+  useEffect(() => {
+    const menuItems = getMenuItems();
+    console.log("Raw Menu Items:", menuItems);
+    if (!menuItems || menuItems.length === 0) {
+      console.error("Menu items are empty or undefined");
+    }
+    const filteredItems = filterMenuItemsByRole(menuItems, userRole);
+    console.log("Filtered Menu Items:", filteredItems);
+    setFilteredMenuItems(filteredItems);
+  }, [userRole]);
+
   useEffect(() => {
     changeHTMLAttribute("data-mode", layoutTheme);
   }, [layoutTheme]);
@@ -90,12 +93,10 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
     document.getElementsByTagName("html")[0].removeAttribute("data-layout");
   }, []);
 
-  // Sidebar type toggling based on viewport width
   useEffect(() => {
     if (width <= 1140) {
       dispatch(changeSideBarType(layoutConstants.SideBarType.LEFT_SIDEBAR_TYPE_MOBILE));
     } else if (width > 1140) {
-      // Ensure we respect the current sidebar state (e.g., if it's SMALL due to collapse)
       if (
         sideBarType !== layoutConstants.SideBarType.LEFT_SIDEBAR_TYPE_SMALL &&
         sideBarType !== layoutConstants.SideBarType.LEFT_SIDEBAR_TYPE_HOVER &&
@@ -110,7 +111,8 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
   const isLight = sideBarTheme === layoutConstants.SideBarTheme.LEFT_SIDEBAR_THEME_LIGHT;
 
   const handleFilterMenuItems = (items: MenuItemTypes[]) => {
-    setFilteredMenuItems(items);
+    const filteredItems = filterMenuItemsByRole(items, userRole);
+    setFilteredMenuItems(filteredItems);
   };
 
   return (

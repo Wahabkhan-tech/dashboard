@@ -1,23 +1,19 @@
-/* eslint-disable react-refresh/only-export-components */
 import React from "react";
 import { Navigate, Route, RouteProps } from "react-router-dom";
-
-// components
 import PrivateRoute from "./PrivateRoute";
-import TicketsApp from "../pages/Tickets";
-
-// lazy load all the views
-const Login = React.lazy(() => import("../pages/auth/Login"));
-const Register = React.lazy(() => import("../pages/auth/Register"));
-const RecoverPassword = React.lazy(() => import("../pages/auth/RecoverPassword"));
-const LockScreen = React.lazy(() => import("../pages/auth/LockScreen"));
-const Dashboard = React.lazy(() => import("../pages/dashboard/"));
-const TicketsAppRoute = React.lazy(() => import("../pages/Tickets"));
-const Reports = React.lazy(() => import("../pages/report/Reports"));
-const Uploads = React.lazy(() => import("../pages/UploadFilesPage/UploadFilesPage"));
-const Billings = React.lazy(() => import("../pages/Billing/Billings"));
-const Clients = React.lazy(() => import("../pages/client/Clients"));
-const Messages = React.lazy(() => import("../pages/messages/Messages")); // Add Messages
+import Dashboard from "../pages/dashboard/";
+import Tickets from "../pages/Tickets";
+import Reports from "../pages/report/Reports";
+import Uploads from "../pages/UploadFilesPage/UploadFilesPage";
+import Billings from "../pages/Billing/Billings";
+import Clients from "../pages/client/Clients";
+import Messages from "../pages/messages/Messages";
+import Login from "../pages/auth/Login";
+import Register from "../pages/auth/Register";
+import RecoverPassword from "../pages/auth/RecoverPassword";
+import LockScreen from "../pages/auth/LockScreen";
+import Forbidden from "../pages/error/Forbidden";
+import { UserRoles } from "../constants/permissions";
 
 export interface RoutesProps {
   path: RouteProps["path"];
@@ -31,36 +27,38 @@ export interface RoutesProps {
   children?: RoutesProps[];
 }
 
-// dashboards
 const dashboardRoutes: RoutesProps = {
   path: "/home",
   name: "Dashboards",
-  icon: "home",
+  icon: "mgc_home_3_line",
   header: "Navigation",
+  roles: [UserRoles.ADMIN, UserRoles.CONSULTANT, UserRoles.CUSTOMER],
   children: [
     {
       path: "/",
       name: "Root",
       element: <Navigate to="/dashboard" />,
       route: PrivateRoute,
+      roles: [UserRoles.ADMIN, UserRoles.CONSULTANT, UserRoles.CUSTOMER],
     },
     {
       path: "/dashboard",
       name: "Dashboard",
       element: <Dashboard />,
       route: PrivateRoute,
+      roles: [UserRoles.ADMIN, UserRoles.CONSULTANT, UserRoles.CUSTOMER],
     },
   ],
 };
 
-// Apps
-const ticketsAppRoutes: RoutesProps = {
+const ticketsRoute: RoutesProps = {
   path: "/apps/tickets",
   name: "Tickets",
+  element: <Tickets />,
   route: PrivateRoute,
   icon: "mgc_coupon_line",
-  element: <TicketsAppRoute />,
   header: "Apps",
+  roles: [UserRoles.ADMIN, UserRoles.CONSULTANT, UserRoles.CUSTOMER],
 };
 
 const reportsRoute: RoutesProps = {
@@ -70,6 +68,7 @@ const reportsRoute: RoutesProps = {
   route: PrivateRoute,
   icon: "mgc_file_line",
   header: "Apps",
+  roles: [UserRoles.ADMIN, UserRoles.CONSULTANT],
 };
 
 const uploadsRoute: RoutesProps = {
@@ -79,6 +78,7 @@ const uploadsRoute: RoutesProps = {
   route: PrivateRoute,
   icon: "mgc_upload_2_line",
   header: "Apps",
+  roles: [UserRoles.ADMIN, UserRoles.CONSULTANT],
 };
 
 const billingsRoute: RoutesProps = {
@@ -86,11 +86,10 @@ const billingsRoute: RoutesProps = {
   name: "Billings",
   element: <Billings />,
   route: PrivateRoute,
-  icon: "mgc_credit_card_line",
+  icon: "mgc_wallet_line",
   header: "Apps",
+  roles: [UserRoles.ADMIN, UserRoles.CONSULTANT],
 };
-
-
 
 const clientsRoute: RoutesProps = {
   path: "/clients",
@@ -99,6 +98,7 @@ const clientsRoute: RoutesProps = {
   route: PrivateRoute,
   icon: "mgc_user_3_line",
   header: "Apps",
+  roles: [UserRoles.ADMIN, UserRoles.CONSULTANT],
 };
 
 const messagesRoute: RoutesProps = {
@@ -106,57 +106,69 @@ const messagesRoute: RoutesProps = {
   name: "Messages",
   element: <Messages />,
   route: PrivateRoute,
-  icon: "mgc_message_line",
+  icon: "mgc_message_2_line",
   header: "Apps",
+  roles: [UserRoles.ADMIN, UserRoles.CONSULTANT, UserRoles.CUSTOMER],
 };
 
-// auth
 const authRoutes: RoutesProps[] = [
   {
     path: "/auth/login",
     name: "Login",
     element: <Login />,
     route: Route,
+    roles: [UserRoles.ADMIN, UserRoles.CONSULTANT, UserRoles.CUSTOMER],
   },
   {
     path: "/auth/register",
     name: "Register",
     element: <Register />,
     route: Route,
+    roles: [UserRoles.ADMIN],
   },
   {
     path: "/auth/recover-password",
     name: "Recover Password",
     element: <RecoverPassword />,
     route: Route,
+    roles: [UserRoles.ADMIN, UserRoles.CONSULTANT, UserRoles.CUSTOMER],
   },
   {
     path: "/auth/lock-screen",
     name: "Lock Screen",
     element: <LockScreen />,
     route: Route,
+    roles: [UserRoles.ADMIN],
   },
 ];
 
-// public routes
 const otherPublicRoutes = [
+  {
+    path: "/forbidden",
+    name: "Forbidden",
+    element: <Forbidden />,
+    route: Route,
+    roles: [UserRoles.ADMIN, UserRoles.CONSULTANT, UserRoles.CUSTOMER],
+  },
   {
     path: "*",
     name: "Error - 404",
     element: <Navigate to="/auth/login" />,
     route: Route,
+    roles: [UserRoles.ADMIN, UserRoles.CONSULTANT, UserRoles.CUSTOMER],
   },
 ];
 
 const authProtectedRoutes = [
   dashboardRoutes,
-  ticketsAppRoutes,
+  ticketsRoute,
   reportsRoute,
   uploadsRoute,
   billingsRoute,
   clientsRoute,
-  messagesRoute, // Add Messages route
+  messagesRoute,
 ];
+
 const publicRoutes = [...authRoutes, ...otherPublicRoutes];
 
 const flattenRoutes = (routes: RoutesProps[]) => {

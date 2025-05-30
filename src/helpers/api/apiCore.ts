@@ -1,6 +1,4 @@
-import jwtDecode from "jwt-decode";
 import axios from "axios";
-
 import config from "../../config";
 
 // content type
@@ -50,7 +48,7 @@ const AUTH_SESSION_KEY = "konrix_user";
  * @param {*} token
  */
 const setAuthorization = (token: string | null) => {
-  if (token) axios.defaults.headers.common["Authorization"] = "JWT " + token;
+  if (token) axios.defaults.headers.common["Authorization"] = "Bearer " + token; // Changed to Bearer for consistency
   else delete axios.defaults.headers.common["Authorization"];
 };
 
@@ -58,10 +56,8 @@ const getUserFromCookie = () => {
   const user = sessionStorage.getItem(AUTH_SESSION_KEY);
   return user ? (typeof user == "object" ? user : JSON.parse(user)) : null;
 };
+
 class APICore {
-  /**
-   * Fetches data from given url
-   */
   get = (url: string, params: any) => {
     let response;
     if (params) {
@@ -109,37 +105,22 @@ class APICore {
     return axios.all(reqs);
   };
 
-  /**
-   * post given data to url
-   */
   create = (url: string, data: any) => {
     return axios.post(url, data);
   };
 
-  /**
-   * Updates patch data
-   */
   updatePatch = (url: string, data: any) => {
     return axios.patch(url, data);
   };
 
-  /**
-   * Updates data
-   */
   update = (url: string, data: any) => {
     return axios.put(url, data);
   };
 
-  /**
-   * Deletes data
-   */
   delete = (url: string) => {
     return axios.delete(url);
   };
 
-  /**
-   * post given data to url with file
-   */
   createWithFile = (url: string, data: any) => {
     const formData = new FormData();
     for (const k in data) {
@@ -155,9 +136,6 @@ class APICore {
     return axios.post(url, formData, config);
   };
 
-  /**
-   * post given data to url with file
-   */
   updateWithFile = (url: string, data: any) => {
     const formData = new FormData();
     for (const k in data) {
@@ -175,32 +153,20 @@ class APICore {
 
   isUserAuthenticated = () => {
     const user = this.getLoggedInUser();
-
-    if (!user) {
-      return false;
-    }
-    const decoded: any = jwtDecode(user.token);
-    const currentTime = Date.now() / 1000;
-    if (decoded.exp < currentTime) {
-      console.warn("access token expired");
-      return false;
-    } else {
-      return true;
-    }
+    return !!user && !!user.token; // Simplified check: user and token exist
   };
 
   setLoggedInUser = (session: any) => {
-    if (session)
+    if (session) {
       sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
-    else {
+    } else {
       sessionStorage.removeItem(AUTH_SESSION_KEY);
     }
   };
-  /**
-   * Returns the logged in user
-   */
+
   getLoggedInUser = () => {
-    return getUserFromCookie();
+    const user = getUserFromCookie();
+    return user || null;
   };
 
   setUserInSession = (modifiedUser: any) => {
@@ -212,9 +178,6 @@ class APICore {
   };
 }
 
-/*
-Check if token available in session
-*/
 const user = getUserFromCookie();
 if (user) {
   const { token } = user;
