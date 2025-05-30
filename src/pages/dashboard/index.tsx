@@ -1,17 +1,16 @@
 import { PageBreadcrumb } from "../../components";
-import Tasks from "./Tasks";
-import ProjectChart from "./ProjectChart";
-// import ProjectSummary from "./ProjectSummary";
-import QuickActions from "./QuickActions";
-import AIInsights from "./AIInsights";
-import BillingSummary from "./BillingSummary";
-import SupportTickets from "./SupportTickets";
-import RecentActivity from "./RecentActivity";
+import Tasks from "./admin/Tasks";
+import ProjectChart from "./admin/ProjectChart";
+import QuickActions from "./admin/QuickActions";
+import AIInsights from "./admin/AIInsights";
+import BillingSummary from "./admin/BillingSummary";
+import SupportTickets from "./admin/SupportTickets";
+import RecentActivity from "./admin/RecentActivity";
 import UploadArea from "../UploadFilesPage/UploadArea";
-import PendingTasks from "./PendingTasks";
-import RecentNotifications from "./RecentNotifications";
+import PendingTasks from "./admin/PendingTasks";
+import RecentNotifications from "./admin/RecentNotifications";
 import YourClients from "./YourClients";
-import LatestFileStatus from "./LatestFileStatus";
+import LatestFileStatus from "./admin/LatestFileStatus";
 
 const Dashboard = () => {
   return (
