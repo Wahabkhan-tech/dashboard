@@ -1,14 +1,16 @@
-import React from 'react';
+import React from "react";
 
 const YourClients = () => {
+  const userRole = JSON.parse(sessionStorage.getItem("konrix_user") || "{}")?.role || "Customer";
+
   const clients = [
     { name: "Jafkar Construction", status: "Active", lastActivity: "2 Days Ago" },
     { name: "Jafkar Construction", status: "Active", lastActivity: "2 Days Ago" },
     { name: "Jafkar Construction", status: "Active", lastActivity: "2 Days Ago" },
   ];
 
-  return (
-    <div className="bg-white  rounded-xl p-6">
+  return userRole === "Consultant" ? (
+    <div className="bg-white rounded-xl p-6">
       <h2 className="text-xl font-semibold text-black">Your Clients</h2>
       <p className="text-sm text-black mt-1">Latest clients</p>
       <div className="bg-white shadow-md rounded-lg overflow-hidden mt-4">
@@ -44,7 +46,7 @@ const YourClients = () => {
         </div>
       </div>
     </div>
-  );
+  ) : null;
 };
 
 export default YourClients;

@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate, Route, RouteProps } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import Dashboard from "../pages/dashboard/";
+import Dashboard from "../pages/dashboard";
 import Tickets from "../pages/Tickets";
 import Reports from "../pages/report/Reports";
 import Uploads from "../pages/UploadFilesPage/UploadFilesPage";
